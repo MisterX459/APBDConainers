@@ -2,8 +2,20 @@
 
 public class RefrigeratedContainer : Container
 {
+    
+    private static int RefrigeratedConCounter = 0;
     public string ProductType { get; private set; }
     public double Temperature { get; private set; }
+    
+    protected override int GetConCounter()
+    {
+        return RefrigeratedConCounter;
+    }
+    
+    protected override void IncrementConCounter()
+    {
+        RefrigeratedConCounter++;
+    }
 
     private static readonly Dictionary<string, double> ProductTemperatureMap = new Dictionary<string, double>
     {

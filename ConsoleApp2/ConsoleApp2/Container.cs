@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp2;
+﻿
+
+namespace ConsoleApp2;
 
 public abstract class Container : IContainer
 {
@@ -6,6 +8,7 @@ public abstract class Container : IContainer
     public string SerialNumber { get; private set; }
     private static int ContainerCounter = 0;
     public string ContainerType;
+        
     public double ContainerHeight { get; set; }
     public double ContainerWeight { get; set; }
     public double ContainerDepth { get; set; }
@@ -23,9 +26,13 @@ public abstract class Container : IContainer
         CheckWeight();
     }
 
+    protected abstract int GetConCounter();
+    protected abstract void IncrementConCounter();
     private void generateSerialNumber()
     {
-        SerialNumber = $"KON-{ContainerType}-{(++ContainerCounter).ToString()}";
+        int ConteinerCounter = GetConCounter();
+        SerialNumber = $"KON-{ContainerType}-{(++ConteinerCounter).ToString()}";
+        IncrementConCounter();
     }
 
     public virtual void Unload()

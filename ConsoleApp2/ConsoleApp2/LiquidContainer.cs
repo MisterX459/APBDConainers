@@ -2,6 +2,7 @@
 
 public class LiquidContainer : Container, IHazardNotifier
 {
+    private static int LiquidConCounter = 0;
     public bool IsHazardous { get; private set; }
 
     public LiquidContainer(double cargoWeight, string containerType, double containerDepth,
@@ -9,6 +10,14 @@ public class LiquidContainer : Container, IHazardNotifier
         : base(cargoWeight, containerType, containerDepth, containerHeight, containerWeight, cargoMax)
     {
         IsHazardous = isHazardous;
+    }
+    protected override int GetConCounter()
+    {
+        return LiquidConCounter;
+    }
+    protected override void IncrementConCounter()
+    {
+       LiquidConCounter++;
     }
 
     public override void Load(double cargoWeight)
