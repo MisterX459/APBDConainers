@@ -52,9 +52,5 @@ public abstract class Container : IContainer
         CargoWeight += cargoWeight;
     }
 
-    public void ChangeShip(Ship nowShip, Ship targetShip)
-    {
-        nowShip.RemoveContainer(SerialNumber);
-        targetShip.AddContainer(this);
-    }
+   
 }

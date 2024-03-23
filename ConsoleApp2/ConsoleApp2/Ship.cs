@@ -2,88 +2,96 @@
 
 public class Ship
     {
-        public List<Container> Containers = new();
-        public static int ShipCounter = 0;
-        public int Number { get; set; }
+        public List<Container> Containers { get; private set; }
+        public double Speed { get; }
+        public int Num { get; }
+        public int MaxConainers { get;  }
+        public double MaxCargo { get; }
+        private double Cargo;
 
-        public Ship(double speed, int maxContainers, double maxCargoWeight)
+        public Ship(double speed, int maxConainers, double maxCargo)
         {
             Speed = speed;
-            MaxContainers = maxContainers;
-            MaxCargoWeight = maxCargoWeight;
-            Number = ++ShipCounter;
+            MaxConainers = maxConainers;
+            MaxCargo = maxCargo;
+            Containers = new List<Container>();
+            Num = Counter++;
         }
 
-        private double _actualCargoWeight = 0;
-        public double Speed { get; set; }
-        public int MaxContainers { get; set; }
-        public double MaxCargoWeight { get; set; }
-
-        public void AddContainer(Container con)
+        public void addContainer(Container container)
         {
-            if (Containers.Count < MaxContainers && _actualCargoWeight + con.CargoWeight + con.ContainerWeight < MaxCargoWeight)
+            if ((Cargo + container.CargoWeight + container.ContainerWeight <= MaxCargo) &&
+                (Containers.Count < MaxConainers))
             {
-                Containers.Add(con);
-                _actualCargoWeight += con.CargoWeight + con.ContainerWeight;
+                Containers.Add(container);
+                Cargo += container.ContainerWeight + container.CargoWeight;
             }
             else
             {
-                throw new Exception();
+                throw new Exception("Adding container is not possible.Ship capacity is not so large");
             }
         }
 
-        public void AddContainers(List<Container> cons)
+        public void Remove(string serialNumber)
         {
-            foreach (Container con in cons)
+            Container removeContainer = Containers.Find(container => container.SerialNumber == serialNumber);
+            if (removeContainer != null)
             {
-                AddContainer(con);
+                Containers.Remove(removeContainer);
+                Cargo -= removeContainer.CargoWeight + removeContainer.ContainerWeight;
             }
         }
 
-        public void RemoveContainer(string name)
+        public void LoadContainers(List<Container> containers)
         {
-            foreach (Container con in Containers)
+            foreach (var container in containers)
             {
-                if (con.SerialNumber == name)
-                {
-                    Containers.Remove(con);
-                    _actualCargoWeight -= con.CargoWeight;
-                    break;
-                }
+                addContainer(container);
             }
         }
 
-        public void ReplaceContainer(string name, Container con)
+        public void Replace(string serialNumber, Container Container2)
         {
-            RemoveContainer(name);
-            AddContainer(con);
+            Remove(serialNumber);
+            addContainer(Container2);
         }
 
-        public void ChangeShip(Ship targetShip, string name)
+        public void unload(string serialNumber)
         {
-            foreach (Container con in Containers)
+            Container unloadContainer = Containers.Find(container => container.SerialNumber == serialNumber);
+            if (unloadContainer != null)
             {
-                if (con.SerialNumber == name)
-                {
-                    con.ChangeShip(this, targetShip);
-                    break;
-                }
+                unloadContainer.Unload();
+                Cargo -= unloadContainer.CargoWeight;
+            }
+        }
+
+        public void changeShip(Ship ship, string serialNumber)
+        {
+            Container changeContainer = Containers.Find(container => container.SerialNumber == serialNumber);
+            if (changeContainer != null)
+            {
+                ship.addContainer(changeContainer);
+                Remove(serialNumber);
             }
         }
 
         public override string ToString()
         {
-            string result = $"Ship {Number}\n" +
-                $"Speed {Speed}\n" +
-                $"Cargo Weight {_actualCargoWeight}\n" +
-                $"Max Cargo Weight {MaxCargoWeight}\n" +
-                $"Max Containers {MaxContainers}\n";
-            int Counter = 0;
-            foreach (Container con in Containers)
+            string info = $"Ship {Num}\n" + $"Speed: {Speed} knots\n" + $"Maximum number of containers: {MaxConainers}\n"
+                          + $"Maximum Cargo weigth in tons: {MaxCargo}\n" + $"Cargo weight in tons right now: {Cargo}\n";
+            int conCounter = 0;
+            foreach (Container container in Containers)
             {
-                Counter++;
-                result += $"{Counter}. {con.SerialNumber}\n";
+                conCounter++;
+                info +=$"Serial numbers of current containers on ship: {conCounter}. {container.SerialNumber}.\n";
             }
-            return result;
+
+            return info;
         }
+
+        private static int Counter = 1;
+
     }
+
+
